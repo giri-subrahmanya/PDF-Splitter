@@ -221,7 +221,7 @@ function downloadPdf() {
     doc.setFontSize(18);
 
     doc.text(
-        "Smart Learn Academy",
+        "Smart Learn Educare",
         14,
         20
     );
