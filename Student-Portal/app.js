@@ -1,4 +1,4 @@
-const API_URL = "https://script.google.com/macros/s/AKfycby5HRkk06UN_r-v1HWlmK4Aq3sObbbgZD_zz1qCccYYFCRG-k-jSrbegsq40p7eYyoy/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbx3QCKyScq2f3BQUBpToIuB3-gXYar-tYDXSZNjgP_o3D-G7rCPzmuTTyIBhGFGnSUv/exec";
 
 let allMarks = [];
 let currentStudent = null;
