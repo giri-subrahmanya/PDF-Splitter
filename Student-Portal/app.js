@@ -221,7 +221,7 @@ function downloadPdf() {
     doc.setFontSize(18);
 
     doc.text(
-        "ABC Academy",
+        "Smart Learn Academy",
         14,
         20
     );

@@ -24,13 +24,8 @@
             <div class="academy-brand">
 
                 <a class="navbar-brand" href="#">
-                    <img src="logo.png" alt="" width="200" height="70"
-                        class="d-inline-block align-text-top">
+                    <img src="logo.png" alt="" width="200" height="70" class="d-inline-block align-text-top">
                 </a>
-
-                <h5 class="academy-title">
-                    Smart Learn Educare
-                </h5>
 
             </div>
 
@@ -85,14 +80,15 @@
 
             <div class="marks-card">
 
-                <div class="row mb-3">
+                <div class="row mb-3 align-items-center">
 
-                    <div class="col-md-4">
+                    <div class="col-md-6">
 
                         <input type="text" id="searchBox" class="form-control" placeholder="Search test name">
 
                     </div>
-                    <div class="col-md-4 text-md-end">
+
+                    <div class="col-md-6 text-md-end mt-2 mt-md-0">
 
                         <button id="downloadPdfBtn" class="btn btn-success">
 
@@ -103,25 +99,23 @@
                     </div>
 
                 </div>
+            </div>
+            <div class="table-container">
 
-                <div class="table-container">
+                <table class="table table-striped table-hover">
 
-                    <table class="table table-striped table-hover">
+                    <thead>
 
-                        <thead>
+                        <tr>
+                            <th>Test</th>
+                            <th>Marks</th>
+                        </tr>
 
-                            <tr>
-                                <th>Test</th>
-                                <th>Marks</th>
-                            </tr>
+                    </thead>
 
-                        </thead>
+                    <tbody id="marksTableBody"></tbody>
 
-                        <tbody id="marksTableBody"></tbody>
-
-                    </table>
-
-                </div>
+                </table>
 
             </div>
 
@@ -129,6 +123,8 @@
 
     </div>
 
+    </div>
+    
     <script src="app.js"></script>
 
 </body>
