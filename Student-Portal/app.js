@@ -1,4 +1,4 @@
-const API_URL = "https://script.google.com/macros/s/AKfycby6iUXvkkGaKWaOOpOboaNkUsIGRa_YcpaozRLljHv_bokGslCOgBzVPsvNDTYoeBwm/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbyv0QXGC7UBBdUciJWe5q-FLIeA61n2Pp07uoMab-UCHzgjRNB5qywPpH7IeDDqVGH3/exec";
 
 let allMarks = [];
 
