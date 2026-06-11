@@ -1,6 +1,7 @@
-const API_URL = "https://script.google.com/macros/s/AKfycbyv0QXGC7UBBdUciJWe5q-FLIeA61n2Pp07uoMab-UCHzgjRNB5qywPpH7IeDDqVGH3/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycby6iUXvkkGaKWaOOpOboaNkUsIGRa_YcpaozRLljHv_bokGslCOgBzVPsvNDTYoeBwm/exec";
 
 let allMarks = [];
+let currentStudent = null;
 
 const loginBtn =
     document.getElementById("loginBtn");
@@ -92,6 +93,8 @@ function renderDashboard(data) {
 
     const info =
         document.getElementById("studentInfo");
+
+    currentStudent = data;
 
     info.innerHTML = `
 
@@ -197,3 +200,109 @@ document
 
         }
     );
+
+document
+    .getElementById("downloadPdfBtn")
+    .addEventListener(
+        "click",
+        downloadPdf
+    );
+
+function downloadPdf() {
+
+    if (!currentStudent) {
+        return;
+    }
+
+    const { jsPDF } = window.jspdf;
+
+    const doc = new jsPDF();
+
+    doc.setFontSize(18);
+
+    doc.text(
+        "ABC Academy",
+        14,
+        20
+    );
+
+    doc.setFontSize(14);
+
+    doc.text(
+        "Student Report Card",
+        14,
+        30
+    );
+
+    doc.setFontSize(11);
+
+    let y = 45;
+
+    doc.text(
+        `Name : ${currentStudent.name}`,
+        14,
+        y
+    );
+
+    y += 8;
+
+    doc.text(
+        `OMR ID : ${currentStudent.omr_id}`,
+        14,
+        y
+    );
+
+    y += 8;
+
+    doc.text(
+        `Registration ID : ${currentStudent.registration_id}`,
+        14,
+        y
+    );
+
+    y += 8;
+
+    doc.text(
+        `Batch : ${currentStudent.batch}`,
+        14,
+        y
+    );
+
+    y += 8;
+
+    doc.text(
+        `Mentor : ${currentStudent.mentor}`,
+        14,
+        y
+    );
+
+    y += 8;
+
+    doc.text(
+        `Email : ${currentStudent.email}`,
+        14,
+        y
+    );
+
+    const rows =
+        Object.entries(
+            currentStudent.marks
+        );
+
+    doc.autoTable({
+
+        startY: 95,
+
+        head: [
+            ["Test Name", "Marks"]
+        ],
+
+        body: rows
+
+    });
+
+    doc.save(
+        `${currentStudent.omr_id}_ReportCard.pdf`
+    );
+
+}
