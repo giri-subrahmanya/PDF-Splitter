@@ -1,4 +1,5 @@
-const API_URL = "https://script.google.com/macros/s/AKfycbx3QCKyScq2f3BQUBpToIuB3-gXYar-tYDXSZNjgP_o3D-G7rCPzmuTTyIBhGFGnSUv/exec";
+const API_URL =
+    "https://script.google.com/macros/s/AKfycbyY-edVNOfCNw8HKFEN_9PlD2hJPqG8TUuMblDWmBkD-_T_cINwBsPkFRM2hscdE_NydA/exec";
 
 let allMarks = [];
 let currentStudent = null;
@@ -44,8 +45,7 @@ async function login() {
 
     loginBtn.disabled = true;
 
-    message.innerHTML =
-        "Loading...";
+    message.innerHTML = "Loading...";
 
     try {
 
@@ -82,7 +82,6 @@ async function login() {
         loginBtn.disabled = false;
 
     }
-
 }
 
 function renderDashboard(data) {
@@ -91,12 +90,9 @@ function renderDashboard(data) {
 
     dashboard.classList.remove("d-none");
 
-    const info =
-        document.getElementById("studentInfo");
-
     currentStudent = data;
 
-    info.innerHTML = `
+    document.getElementById("studentInfo").innerHTML = `
 
 <div class="student-profile">
 
@@ -142,16 +138,28 @@ function renderDashboard(data) {
     </div>
 
 </div>
-
 `;
 
-    allMarks =
-        Object.entries(
-            data.marks
-        );
+    allMarks = [];
+
+    Object.entries(data.marks).forEach(
+        ([subject, tests]) => {
+
+            Object.entries(tests).forEach(
+                ([test, mark]) => {
+
+                    allMarks.push({
+                        subject,
+                        test,
+                        mark
+                    });
+
+                }
+            );
+        }
+    );
 
     renderMarks(allMarks);
-
 }
 
 function renderMarks(records) {
@@ -163,18 +171,23 @@ function renderMarks(records) {
 
     tbody.innerHTML = "";
 
-    for (const [test, mark] of records) {
+    records.forEach(record => {
 
         const row =
             document.createElement("tr");
 
         row.innerHTML = `
-            <td>${test}</td>
-            <td>${mark}</td>
+            <td>
+                <span class="subject-badge">
+                    ${record.subject}
+                </span>
+            </td>
+            <td>${record.test}</td>
+            <td>${record.mark}</td>
         `;
 
         tbody.appendChild(row);
-    }
+    });
 }
 
 document
@@ -190,14 +203,16 @@ document
 
             const filtered =
                 allMarks.filter(
-                    ([test]) =>
-                        test
+                    item =>
+                        item.test
+                            .toLowerCase()
+                            .includes(query) ||
+                        item.subject
                             .toLowerCase()
                             .includes(query)
                 );
 
             renderMarks(filtered);
-
         }
     );
 
@@ -209,100 +224,130 @@ document
     );
 
 function downloadPdf() {
-
     if (!currentStudent) {
         return;
     }
 
     const { jsPDF } = window.jspdf;
-
     const doc = new jsPDF();
 
-    doc.setFontSize(18);
+    // ----------------------------------------------------
+    // 1. BRANDING & HEADER SECTION
+    // ----------------------------------------------------
+    // Top colored banner
+    doc.setFillColor(41, 128, 185); // Professional Blue
+    doc.rect(0, 0, 210, 30, 'F'); 
 
-    doc.text(
-        "Smart Learn Educare",
-        14,
-        20
-    );
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(22);
+    doc.setFont("helvetica", "bold");
+    doc.text("Smart Learn Educare", 14, 20);
 
-    doc.setFontSize(14);
+    // Document Title
+    doc.setTextColor(50, 50, 50);
+    doc.setFontSize(16);
+    doc.text("STUDENT REPORT CARD", 105, 42, { align: "center" });
+    
+    // Decorative underline
+    doc.setDrawColor(41, 128, 185);
+    doc.setLineWidth(0.5);
+    doc.line(14, 46, 196, 46);
 
-    doc.text(
-        "Student Report Card",
-        14,
-        30
-    );
-
+    // ----------------------------------------------------
+    // 2. STUDENT DETAILS (Two-Column Layout)
+    // ----------------------------------------------------
+    doc.setTextColor(0, 0, 0);
     doc.setFontSize(11);
+    
+    let y = 55;
+    const leftCol = 14;
+    const rightCol = 110;
 
-    let y = 45;
+    // Helper to print bold label and normal text
+    const printDetail = (label, value, x, yPos) => {
+        doc.setFont("helvetica", "bold");
+        doc.text(`${label}:`, x, yPos);
+        doc.setFont("helvetica", "normal");
+        // Offset the value dynamically based on label length, or use a fixed offset
+        doc.text(`${value}`, x + 32, yPos); 
+    };
 
-    doc.text(
-        `Name : ${currentStudent.name}`,
-        14,
-        y
-    );
+    // Row 1
+    printDetail("Name", currentStudent.name, leftCol, y);
+    printDetail("Batch", currentStudent.batch, rightCol, y);
+    y += 10;
 
-    y += 8;
+    // Row 2
+    printDetail("OMR ID", currentStudent.omr_id, leftCol, y);
+    printDetail("Mentor", currentStudent.mentor, rightCol, y);
+    y += 10;
 
-    doc.text(
-        `OMR ID : ${currentStudent.omr_id}`,
-        14,
-        y
-    );
+    // Row 3
+    printDetail("Reg ID", currentStudent.registration_id, leftCol, y);
+    printDetail("Email", currentStudent.email, rightCol, y);
 
-    y += 8;
+    // ----------------------------------------------------
+    // 3. MARKS & TABLES
+    // ----------------------------------------------------
+    let startY = y + 20;
 
-    doc.text(
-        `Registration ID : ${currentStudent.registration_id}`,
-        14,
-        y
-    );
+    Object.entries(currentStudent.marks).forEach(([subject, tests]) => {
+        const rows = Object.entries(tests);
 
-    y += 8;
+        if (rows.length === 0) return;
 
-    doc.text(
-        `Batch : ${currentStudent.batch}`,
-        14,
-        y
-    );
+        // Calculate Average
+        let totalMarks = 0;
+        rows.forEach(row => {
+            // Ensure we are adding numbers, safely parsing string values if necessary
+            totalMarks += parseFloat(row[1]) || 0; 
+        });
+        const average = (totalMarks / rows.length).toFixed(2);
 
-    y += 8;
+        // Page break protection for subjects
+        if (startY > 250) { 
+            doc.addPage();
+            startY = 20;
+        }
 
-    doc.text(
-        `Mentor : ${currentStudent.mentor}`,
-        14,
-        y
-    );
+        // Subject Header
+        doc.setFontSize(13);
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(41, 128, 185); // Match branding color
+        doc.text(subject.toUpperCase(), 14, startY);
 
-    y += 8;
+        // Table Generation
+        doc.autoTable({
+            startY: startY + 4,
+            theme: 'striped', // Cleaner, alternating row colors
+            headStyles: { 
+                fillColor: [41, 128, 185], 
+                textColor: 255, 
+                fontStyle: 'bold',
+                halign: 'center' // Center align headers
+            },
+            columnStyles: {
+                0: { halign: 'left' },
+                1: { halign: 'center' } // Center align marks
+            },
+            // REQUIREMENT 1: Added (%) to Marks
+            head: [["Test Name", "Marks (%)"]], 
+            body: rows,
+            // REQUIREMENT 2: Added Average footer
+            foot: [["AVERAGE", `${average}%`]], 
+            footStyles: { 
+                fillColor: [230, 230, 230], 
+                textColor: [50, 50, 50], 
+                fontStyle: 'bold',
+                halign: 'center'
+            },
+            margin: { left: 14, right: 14 }
+        });
 
-    doc.text(
-        `Email : ${currentStudent.email}`,
-        14,
-        y
-    );
-
-    const rows =
-        Object.entries(
-            currentStudent.marks
-        );
-
-    doc.autoTable({
-
-        startY: 95,
-
-        head: [
-            ["Test Name", "Marks"]
-        ],
-
-        body: rows
-
+        // Update Y position for the next table (15px padding)
+        startY = doc.lastAutoTable.finalY + 15; 
     });
 
-    doc.save(
-        `${currentStudent.omr_id}_ReportCard.pdf`
-    );
-
+    // Save the PDF
+    doc.save(`${currentStudent.omr_id}_ReportCard.pdf`);
 }

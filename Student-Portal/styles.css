@@ -146,3 +146,20 @@ thead {
 
     word-break: break-word;
 }
+
+.subject-badge {
+
+    display: inline-block;
+
+    padding: 4px 10px;
+
+    border-radius: 20px;
+
+    background: #eef2ff;
+
+    color: #4338ca;
+
+    font-size: 0.85rem;
+
+    font-weight: 600;
+}
