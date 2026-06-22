@@ -1,5 +1,5 @@
 const API_URL =
-    "https://script.google.com/macros/s/AKfycbyY-edVNOfCNw8HKFEN_9PlD2hJPqG8TUuMblDWmBkD-_T_cINwBsPkFRM2hscdE_NydA/exec";
+    "https://script.google.com/macros/s/AKfycbwpxHUSvGKKJiY_teIjnUZRMSsiOdVaBH1uBA1EuML8BNZxwFjGniOLM0NUNDZReIp_/exec";
 
 let allMarks = [];
 let currentStudent = null;
